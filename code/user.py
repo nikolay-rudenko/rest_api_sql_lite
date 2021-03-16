@@ -1,6 +1,5 @@
 import sqlite3
 from flask_restful import Resource, reqparse
-import pdb
 
 
 class User:
@@ -54,7 +53,7 @@ class UserRegister(Resource):
 
         con = sqlite3.connect('data.db')
         cur = con.cursor()
-        pdb.set_trace()
+
         query = "INSERT INTO users VALUES (NULL, ?, ?)"
 
         cur.execute(query, (data['user_name'], data['password']))

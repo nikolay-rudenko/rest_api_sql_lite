@@ -1,3 +1,4 @@
+import pdb
 import sqlite3
 from flask_restful import Resource, reqparse
 
@@ -51,17 +52,22 @@ class UserRegister(Resource):
     def post(self):
         data = self.purser.parse_args()
 
+        if User.find_by_user_name(data['user_name']):
+            return {"message": "A user with that user name already exist"}, 400
+
         con = sqlite3.connect('data.db')
         cur = con.cursor()
 
         query = "INSERT INTO users VALUES (NULL, ?, ?)"
-
         cur.execute(query, (data['user_name'], data['password']))
 
         con.commit()
         con.close()
 
-        return {"message": "User created successfully!"}, 201
+        return {"message": f"User {data['user_name']} created successfully!"}, 201
+
+
+
 
 
 

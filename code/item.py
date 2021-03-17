@@ -8,24 +8,46 @@ class Item(Resource):
     purser = reqparse.RequestParser()
     purser.add_argument('price', type=float, required=True, help='This field cannot left blank!')
 
-
     @jwt_required()
     def get(self, name):
-        # next giving the first item that found
-        item = next(filter(lambda i: i['name'] == name, items), None)
+        item = self.find_by_name(name)
 
-        return {"item": item}, 200 if item else 404
+        if item:
+            return item
+        return {'message': 'Item not exist'}, 404
+
+    @classmethod
+    def find_by_name(cls, name):
+        con = sqlite3.connect('data.db')
+        cur = con.cursor()
+
+        query = 'SELECT * FROM items WHERE name=?'
+        result = cur.execute(query, (name,))
+        row = result.fetchone()
+        con.close()
+
+        if row:
+            return {"item": {'name': row[0], 'price': row[1]}}
+
 
     def post(self, name):
-        if next(filter(lambda i: i['name'] == name, items), None):
+        if self.find_by_name(name):
             return {"message": f"item '{name}' already exist"}, 400
 
         data = Item.purser.parse_args()
 
         item = {'name': name, 'price': data['price']}
-        items.append(item)
 
-        return items, 201
+        con = sqlite3.connect('data.db')
+        cur = con.cursor()
+
+        query_insert = "INSERT INTO items VALUES (?, ?)"
+        cur.execute(query_insert, (item['name'], item['price']))
+
+        con.commit()
+        con.close()
+
+        return item, 201
 
     @jwt_required()
     def delete(self, name):

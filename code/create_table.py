@@ -3,16 +3,17 @@ import sqlite3
 con = sqlite3.connect('../data.db')
 cur = con.cursor()
 
-create_table = "CREATE TABLE IF NOT EXISTS users(id INTEGER PRIMARY KEY, user_name text, password text)"
+create_table = "CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, user_name text, password text)"
 cur.execute(create_table)
 
-# insert_query = "INSERT INTO users VALUES(?, ?, ?)"
-# user = (1, 'cat', 'qwer')
-# cur.execute(insert_query, user)
+create_table = "CREATE TABLE IF NOT EXISTS items (name text, password real)"
+cur.execute(create_table)
 
-select_query = "SELECT * FROM users"
+# insert_quety = "INSERT INTO items VALUES ('test', 34.64)"
+# cur.execute(insert_quety)
+
+select_query = "SELECT * FROM items"
 cur.execute(select_query)
-print(cur.fetchall())
 
 con.commit()
 con.close()

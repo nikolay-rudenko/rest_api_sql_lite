@@ -101,7 +101,13 @@ class Item(Resource):
 
 class ItemList(Resource):
     def get(self):
-        if len(items) > 0:
-            return {'items': items}
-        else:
-            return {"items": None}, 404
+        con = sqlite3.connect('data.db')
+        cur = con.cursor()
+
+        query_insert = "SELECT * FROM items"
+        result = cur.execute(query_insert)
+        for row in result:
+            print(row)
+
+        con.commit()
+        con.close()

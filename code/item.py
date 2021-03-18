@@ -106,8 +106,10 @@ class ItemList(Resource):
 
         query_insert = "SELECT * FROM items"
         result = cur.execute(query_insert)
+        items = []
         for row in result:
-            print(row)
-
+            items.append({'name': row[0], 'price': row[1]})
         con.commit()
         con.close()
+
+        return items

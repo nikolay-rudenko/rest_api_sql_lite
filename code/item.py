@@ -112,4 +112,4 @@ class ItemList(Resource):
         con.commit()
         con.close()
 
-        return items
+        return {"items": items}

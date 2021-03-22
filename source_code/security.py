@@ -1,4 +1,4 @@
-from source_code.resources.user import UserModel
+from source_code.models.user_model import UserModel
 from werkzeug.security import safe_str_cmp
 
 

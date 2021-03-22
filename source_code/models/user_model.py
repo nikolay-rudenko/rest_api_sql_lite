@@ -3,6 +3,12 @@ from source_code.db import db
 
 
 class UserModel(db.Model):
+    __tablename__ = 'users'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_name = db.Column(db.String(80))
+    password = db.Column(db.String(80))
+
     def __init__(self, _id, user_name, password):
         self.id = _id
         self.user_name = user_name

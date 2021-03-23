@@ -1,4 +1,3 @@
-import sqlite3
 from source_code.db import db
 
 
@@ -18,33 +17,12 @@ class ItemModel(db.Model):
 
     @classmethod
     def find_by_name(cls, name):
-        con = sqlite3.connect('data.db')
-        cur = con.cursor()
+        return cls.query.filter_by(name=name).first()  # equal to SELECT * FROM items WHERE name=name LIMIT=1
 
-        query = 'SELECT * FROM items WHERE name=?'
-        result = cur.execute(query, (name,))
-        row = result.fetchone()
-        con.close()
+    def save_to_db(self):
+        db.session.add(self)
+        db.session.commit()
 
-        if row:
-            return {'price': row[0], 'name': row[1]}
-
-    def insert(self):
-        con = sqlite3.connect('data.db')
-        cur = con.cursor()
-
-        query_insert = "INSERT INTO items VALUES (?, ?)"
-        cur.execute(query_insert, (self.name, self.price))
-
-        con.commit()
-        con.close()
-
-    def update(self):
-        con = sqlite3.connect('data.db')
-        cur = con.cursor()
-
-        query_insert = "UPDATE items SET price=? WHERE name=?"
-        cur.execute(query_insert, (self.price, self.name))
-
-        con.commit()
-        con.close()
+    def delete_from_db(self):
+        db.session.delete(self)
+        db.session.commit()

@@ -1,6 +1,3 @@
-import pdb
-import sqlite3
-
 from flask_restful import Resource, reqparse
 from flask_jwt import jwt_required
 from source_code.models.item_model import ItemModel
@@ -14,7 +11,7 @@ class Item(Resource):
     def get(self, name):
         item = ItemModel.find_by_name(name)
         if item:
-            return item
+            return item.json()
         return {'message': 'Item not exist'}, 404
 
     def post(self, name):
@@ -55,15 +52,5 @@ class Item(Resource):
 
 class ItemList(Resource):
     def get(self):
-        con = sqlite3.connect('data.db')
-        cur = con.cursor()
-
-        query_insert = "SELECT * FROM items"
-        result = cur.execute(query_insert)
-        items = []
-        for row in result:
-            items.append({'name': row[0], 'price': row[1]})
-        con.commit()
-        con.close()
-
-        return {"items": items}
+        # list(map(lambda x: x.json(), ItemModel.query.all()))
+        return {"items": [item.json() for item in ItemModel.query.all()]}

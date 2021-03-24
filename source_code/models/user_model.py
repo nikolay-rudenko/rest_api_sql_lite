@@ -1,7 +1,6 @@
 from source_code.db import db
 
 
-
 class UserModel(db.Model):
     __tablename__ = 'users'
 
@@ -9,8 +8,7 @@ class UserModel(db.Model):
     user_name = db.Column(db.String(80))
     password = db.Column(db.String(80))
 
-    def __init__(self, _id, user_name, password):
-        self.id = _id
+    def __init__(self, user_name, password):
         self.user_name = user_name
         self.password = password
 

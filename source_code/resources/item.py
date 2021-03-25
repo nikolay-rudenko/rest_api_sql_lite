@@ -6,6 +6,7 @@ from source_code.models.item_model import ItemModel
 class Item(Resource):
     purser = reqparse.RequestParser()
     purser.add_argument('price', type=float, required=True, help='This field cannot left blank!')
+    purser.add_argument('store_id', type=int, required=True, help='Every item needs a store id.')
 
     @jwt_required()
     def get(self, name):
@@ -20,7 +21,7 @@ class Item(Resource):
 
         data = Item.purser.parse_args()
 
-        item = ItemModel(name, data['price'])
+        item = ItemModel(name, **data)
 
         try:
             ItemModel.save_to_db(item)
@@ -42,7 +43,7 @@ class Item(Resource):
         item = ItemModel.find_by_name(name)
 
         if item is None:
-            item = ItemModel(name, data['price'])
+            item = ItemModel(name, **data)
         else:
             item.price = data['price']
         item.save_to_db()

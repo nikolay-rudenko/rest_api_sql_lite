@@ -1,6 +1,3 @@
-import pdb
-import sqlite3
-
 from flask_restful import Resource, reqparse
 from flask_jwt import jwt_required
 from source_code.models.item_model import ItemModel
@@ -14,7 +11,7 @@ class Item(Resource):
     def get(self, name):
         item = ItemModel.find_by_name(name)
         if item:
-            return item
+            return item.json()
         return {'message': 'Item not exist'}, 404
 
     def post(self, name):
@@ -26,7 +23,7 @@ class Item(Resource):
         item = ItemModel(name, data['price'])
 
         try:
-            ItemModel.insert(item)
+            ItemModel.save_to_db(item)
         except:
             return {"message": f"An error occurs inserting item.{item}"}, 500  # internal server error
 
@@ -34,47 +31,26 @@ class Item(Resource):
 
     @jwt_required()
     def delete(self, name):
-        con = sqlite3.connect('data.db')
-        cur = con.cursor()
-
-        query_insert = "DELETE FROM items WHERE name=?"
-        cur.execute(query_insert, (name,))
-
-        con.commit()
-        con.close()
+        item = ItemModel.find_by_name(name)
+        if item:
+            item.delete_from_db()
 
         return {'message': f'Item {name} deleted'}
 
     def put(self, name):
         data = Item.purser.parse_args()
         item = ItemModel.find_by_name(name)
-        updated_item = ItemModel(name, data['price'])
 
         if item is None:
-            try:
-                updated_item.insert()
-            except:
-                return {"message": f"An error occurs inserting item.{updated_item}"}, 500
+            item = ItemModel(name, data['price'])
         else:
-            try:
-                updated_item.update()
-            except:
-                return {"message": f"An error occurs inserting item.{updated_item}"}, 500
+            item.price = data['price']
+        item.save_to_db()
 
-        return updated_item.json()
+        return item.json()
 
 
 class ItemList(Resource):
     def get(self):
-        con = sqlite3.connect('data.db')
-        cur = con.cursor()
-
-        query_insert = "SELECT * FROM items"
-        result = cur.execute(query_insert)
-        items = []
-        for row in result:
-            items.append({'name': row[0], 'price': row[1]})
-        con.commit()
-        con.close()
-
-        return {"items": items}
+        # list(map(lambda x: x.json(), ItemModel.query.all()))
+        return {"items": [item.json() for item in ItemModel.query.all()]}

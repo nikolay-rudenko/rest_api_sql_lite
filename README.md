@@ -1,4 +1,6 @@
-# Rest Api SQL-Lite
+# Rest Api SQL Lite
+
+This is project implemented using Flask, and is a REST API for a Store.
 
 Stack of technology is:
 
